@@ -1,17 +1,17 @@
 <header id="top_header"> Welcome to Online Notes Portal</header>
 <nav id="nav_bar">
     <ul id="nav_list">
-        <li id="item1"> Home</li>
-        <li id="item2"> Profile</li>
-        <li id="item3"> Search</li>
+        <li id="nav_home"> Home</li>
+        <li id="nav_profile"> Profile</li>
+        <li id="nav_search"> Search</li>
     </ul>
 </nav>
 
 <script>
     $(document).ready(function () {
-        // $("#nav_list li").click(function () {
-        //     $("#" + this.id).css({'box-shadow': '5px 5px 2px #888888 inset'});
-        // });
+        $('#nav_home').on('click', function () {
+            window.location.href = "http://localhost:8080/home.html";
+        });
 
         $("#nav_list li").mouseenter(function () {
             $("#" + this.id).css({'box-shadow': '5px 5px 2px #888888 inset'});

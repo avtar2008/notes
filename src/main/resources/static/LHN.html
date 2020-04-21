@@ -8,7 +8,7 @@
 <script>
     $(document).ready(function () {
         $('#lhn_item1').on('click', function () {
-            window.location.href = "http://127.0.0.1:8080/create.html";  // Change This
+            window.location.href = "http://localhost:8080/create.html";
         });
 
         $("#lhn_list li").mouseenter(function () {
@@ -18,12 +18,9 @@
         $("#lhn_list li").mouseleave(function () {
             $("#" + this.id).css({'box-shadow': '5px 5px 2px #888888'});
         });
-
     });
 
-    function go() {
-        window.location = "http://127.0.0.1:8080/create.html";
-    }
+
 </script>
 
 <style>

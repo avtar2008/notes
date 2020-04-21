@@ -1,81 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="ISO-8859-1">
-<title>Home Page</title>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script> 
-<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.js"></script>
-<link rel="stylesheet" type="text/css" href="home.css" />
+    <meta charset="ISO-8859-1">
+    <title>Home Page</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.js"></script>
+    <link rel="stylesheet" type="text/css" href="home.css"/>
 
 </head>
-	
+
 <body onload="load_startup()">
 <div id=big_div data-ng-app="">
-	<div data-ng-include = "'header.html'">
-	</div>
-	
-	<div id="mid_div">
-		<div data-ng-include="'LHN.html'"></div>
-		<section id= "main_section">
+    <div data-ng-include="'header.html'">
+    </div>
 
-		</section>
-	</div>
-	
-	<div data-ng-include="'footer.html'"></div>
-	
+    <div id="mid_div">
+        <div data-ng-include="'LHN.html'"></div>
+        <section id="main_section">
+            <h1><label id="main_sec_text">Please click any box to update Content.</label></h1>
+        </section>
+    </div>
+
+    <div data-ng-include="'footer.html'"></div>
+
 </div>
 
 <script type="text/javascript">
-		$(document).ready(function(){
-			$('input').click(function(){
-				$("#"+(this.id)).val("");		
-				
-			});
-		 	
-		
-		
-		});
-		
-		function on() {
-			
-			var obj = new Object();
-			var param = document.getElementById("text1").value; 
-			obj.name = param;
-			//obj.name2 = document.getElementById("text2").value;
+    $(document).ready(function () {
+        $('input').click(function () {
+            $("#" + (this.id)).val("");
 
-			var jsonString = JSON.stringify(obj);
+        });
+    });
 
-			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.open("POST", "http://localhost:8080/notes/" + "user1", false);
-			xmlHttp.setRequestHeader("Content-type", "application/json");
-			xmlHttp.send(jsonString);
-			return xmlHttp.responseText;
-		}
+    function load_startup() {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("GET", "http://localhost:8080/notes/" + "user2", false);
+        // xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.send();
+        console.log(xmlHttp.responseText);
+        var response = JSON.parse(xmlHttp.responseText);
 
-		function load_startup(){
-			var xmlHttp = new XMLHttpRequest();
-			xmlHttp.open("GET", "http://localhost:8080/notes/" + "user2", false);
-			// xmlHttp.setRequestHeader("Content-type", "application/json");
-			xmlHttp.send();
-			console.log(xmlHttp.responseText);
-			var response =  JSON.parse(xmlHttp.responseText);
+        console.log(response[0].name);
+        response.forEach(function (item, index) {
+            index++;
+            var label = document.createElement("LABEL");   // Create a <button> element
+            label.innerHTML = index + ': ' + item.gender + ' , ' + item.text + ' , ' + item.created;
+			//label.innerText = item.id;
+            label.className = "notes";
+            label.id = "note" + index;
+            label.style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block;  width: 90%; border-radius:15px; " +
+                "border:5px solid grey; border-padding:5px";
 
-			console.log(response[0].name);
-			response.forEach(function(item, index){
-				index++;
-				var label = document.createElement("LABEL");   // Create a <button> element
-				label.innerHTML = index + ': ' + item.gender + ' , ' +  item.text + ' , ' + item.created;
-				// console.log(item.text);
-				label.className = "notes";
-				label.id = "note" + index;
-				label.style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block;  width: 90%; border-radius:15px; " +
-						"border:5px solid grey; border-padding:5px";
-				document.getElementById("main_section").appendChild(label);
-				document.getElementById("main_section").innerHTML += "<br>";
-			});
-		}
-		
-	</script>
+            document.getElementById("main_section").appendChild(label);
+
+
+            document.getElementById("note" + index).addEventListener("click", function () {
+                console.log("sadasdw");
+                var element = document.getElementById("updateBox");
+                if (null != element) {
+                    element.parentNode.removeChild(element);
+                }
+                var updateBox = document.createElement("input");
+                //updateBox.innerText = this.innerText;
+                updateBox.id = "updateBox";
+                updateBox.type = "text";
+                updateBox.value = (document.getElementById(this.id).innerHTML).substring(2);
+                updateBox.style = "width : 90%; height: 16%";
+                document.getElementById("main_section").appendChild(updateBox);
+
+                var updateBtn = document.createElement("button");
+				updateBtn.id = "updateBtn";
+				updateBtn.value = "Update";
+				updateBtn.innerHTML = "Update";
+				updateBtn.style = "width : 20%; height: 16%";
+				document.getElementById("main_section").appendChild(updateBtn);
+				updateBtn.addEventListener('click', updateNote(updateBox.value, item.id));
+            });
+        });
+    }
+
+    function updateNote(noteText, id) {
+
+		var xmlHttp = new XMLHttpRequest();
+		xmlHttp.open("POST", "http://localhost:8080/notes/update/" + id, false);
+		xmlHttp.setRequestHeader("Content-type", "text/plain");
+		xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+		// xmlHttp.setRequestHeader("Content-type", "application/json");
+		xmlHttp.send(noteText);
+	}
+
+</script>
 
 </body>
 </html>

@@ -5,7 +5,9 @@ import com.mongodb.client.FindIterable;
 import com.mongodb.client.model.Filters;
 import com.notes.constants.MongoConstants;
 import com.notes.entity.Note;
+import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 
 import java.util.List;
 
@@ -22,7 +24,7 @@ public class MongoUtils {
             if(note == null){
                 continue;
             }
-
+            System.out.println("id = " + note.getId());
             notes.add(note);
         }
 
@@ -31,5 +33,20 @@ public class MongoUtils {
 
     public static Bson createUserFilter(String userName) {
         return Filters.eq(MongoConstants.NAME, userName);
+    }
+
+    public static Document mapEntityToDB(Note note){
+        Document document = new Document();
+
+        document.put(MongoConstants.NAME, note.getName());
+        document.put(MongoConstants.CREATED, note.getCreated());
+        document.put(MongoConstants.GENDER, note.getGender());
+        document.put(MongoConstants.TEXT, note.getText());
+        document.put(MongoConstants.LAST_UPDATED, note.getLast_updated());
+        if(note.getId() == null){
+            note.setId(new ObjectId());
+        }
+        document.put(MongoConstants.ID, note.getId());
+        return document;
     }
 }

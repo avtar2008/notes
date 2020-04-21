@@ -21,6 +21,7 @@
 			<form enctype="application/json" id="UserDetails">
 				<label id= "detail_label" >New Note</label>
 				<input type="text" id="text1" value="NoteText" />
+				<label id="resp_label"></label>
 				<input type="button" name="button1" onclick="on()" value="Submit" />
 			</form>
 		</section>
@@ -51,7 +52,14 @@
 			xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
 			console.log(jsonString);
 			xmlHttp.send(jsonString);
-			return xmlHttp.responseText;
+			if(xmlHttp.status == 200){
+				document.getElementById("resp_label").innerHTML = "Notes saved successfully";
+				document.getElementById("resp_label").style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block; align: center; color:green";
+			} else {
+				document.getElementById("resp_label").innerHTML = "Some Error Occurred while saving the note";
+				document.getElementById("resp_label").style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block; align: center; color:red";
+			}
+			return xmlHttp.status;
 		}
 		
 	</script>
