@@ -1,5 +1,6 @@
 package com.notes.entity;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.notes.constants.MongoConstants;
@@ -23,8 +24,8 @@ public class Note {
     @BsonProperty(value = MongoConstants.NAME)
     String name;
 
-    @BsonProperty(value = MongoConstants.GENDER)
-    String gender;
+//    @BsonProperty(value = MongoConstants.GENDER)
+//    String gender;
 
     @BsonProperty(value = MongoConstants.TEXT)
     String text;

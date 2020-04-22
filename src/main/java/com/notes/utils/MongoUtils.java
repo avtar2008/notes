@@ -9,6 +9,9 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.bson.types.ObjectId;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 public class MongoUtils {
@@ -40,7 +43,7 @@ public class MongoUtils {
 
         document.put(MongoConstants.NAME, note.getName());
         document.put(MongoConstants.CREATED, note.getCreated());
-        document.put(MongoConstants.GENDER, note.getGender());
+        //document.put(MongoConstants.GENDER, note.getGender());
         document.put(MongoConstants.TEXT, note.getText());
         document.put(MongoConstants.LAST_UPDATED, note.getLast_updated());
         if(note.getId() == null){
@@ -48,5 +51,29 @@ public class MongoUtils {
         }
         document.put(MongoConstants.ID, note.getId());
         return document;
+    }
+
+    public static Bson updateFilterById(String id) {
+        return Filters.eq(MongoConstants.ID, new ObjectId(id));
+    }
+
+    public static String createHash(String password) {
+        String hash = null;
+
+        try {
+
+            MessageDigest md = MessageDigest.getInstance("SHA-1");
+            byte[] messageDigest = md.digest(password.getBytes());
+            BigInteger no = new BigInteger(1, messageDigest);
+            hash = no.toString(16);
+            while (hash.length() < 32) {
+                hash = "0" + hash;
+            }
+            System.out.println("hash : " + hash);
+            return hash;
+        }
+        catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

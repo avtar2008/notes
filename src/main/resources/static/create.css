@@ -55,14 +55,14 @@ body{
 
 
 
-#UserDetails{
+#NoteDetails{
 	display: flex;
 	flex-direction: column;
 	align-items:center;
 	border-radius:25px;
 }
 
-#UserDetails > input{
+#NoteDetails > input{
 	height: 1.5rem;
 	width: 200px;
 	border-radius:25px;

@@ -18,6 +18,7 @@
         <div data-ng-include="'LHN.html'"></div>
         <section id="main_section">
             <h1><label id="main_sec_text">Please click any box to update Content.</label></h1>
+            <label id="resp_label"></label>
         </section>
     </div>
 
@@ -44,9 +45,14 @@
         console.log(response[0].name);
         response.forEach(function (item, index) {
             index++;
-            var label = document.createElement("LABEL");   // Create a <button> element
-            label.innerHTML = index + ': ' + item.gender + ' , ' + item.text + ' , ' + item.created;
-			//label.innerText = item.id;
+            var label = document.createElement("LABEL");
+            var d = new Date(item.created);
+            const ye = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(d)
+            const mo = new Intl.DateTimeFormat('en', { month: 'short' }).format(d)
+            const da = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(d)
+            var formattedDate = `${da}-${mo}-${ye}`;
+            label.innerHTML = index + ': ' + item.text + ' , ' + formattedDate;
+            //label.innerText = item.id;
             label.className = "notes";
             label.id = "note" + index;
             label.style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block;  width: 90%; border-radius:15px; " +
@@ -54,15 +60,9 @@
 
             document.getElementById("main_section").appendChild(label);
 
-
             document.getElementById("note" + index).addEventListener("click", function () {
                 console.log("sadasdw");
-                var element = document.getElementById("updateBox");
-                if (null != element) {
-                    element.parentNode.removeChild(element);
-                }
                 var updateBox = document.createElement("input");
-                //updateBox.innerText = this.innerText;
                 updateBox.id = "updateBox";
                 updateBox.type = "text";
                 updateBox.value = (document.getElementById(this.id).innerHTML).substring(2);
@@ -70,25 +70,45 @@
                 document.getElementById("main_section").appendChild(updateBox);
 
                 var updateBtn = document.createElement("button");
-				updateBtn.id = "updateBtn";
-				updateBtn.value = "Update";
-				updateBtn.innerHTML = "Update";
-				updateBtn.style = "width : 20%; height: 16%";
-				document.getElementById("main_section").appendChild(updateBtn);
-				updateBtn.addEventListener('click', updateNote(updateBox.value, item.id));
+                updateBtn.id = "updateBtn";
+                updateBtn.value = "Update";
+                updateBtn.innerHTML = "Update";
+                updateBtn.style = "width : 20%; height: 12%; border-radius: 15px";
+                document.getElementById("main_section").appendChild(updateBtn);
+                document.addEventListener('click', function (e) {
+                    if (e.target && e.target.id == 'updateBtn') {
+                        callUpdate(document.getElementById("updateBox").value, item.id);
+                    }
+                });
             });
         });
     }
 
-    function updateNote(noteText, id) {
+    function callUpdate(noteText, id) {
+        console.log("inside callUpdate: noteText = " + noteText + " , id = " + id);
+        var status = updateNote(noteText, id);
+        if (status == 200) {
+            document.getElementById("resp_label").innerHTML = "Notes saved successfully. Please refresh page";
+            document.getElementById("resp_label").style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block; align: center; color:green";
+        } else {
+            document.getElementById("resp_label").innerHTML = "Some Error Occurred while saving the note";
+            document.getElementById("resp_label").style = "padding:10px;  font: 20px bold italic Tahoma cursive;  display: block; align: center; color:red";
+        }
+        updateBox.parentNode.removeChild(updateBox);
+        updateBtn.parentNode.removeChild(updateBtn);
 
-		var xmlHttp = new XMLHttpRequest();
-		xmlHttp.open("POST", "http://localhost:8080/notes/update/" + id, false);
-		xmlHttp.setRequestHeader("Content-type", "text/plain");
-		xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
-		// xmlHttp.setRequestHeader("Content-type", "application/json");
-		xmlHttp.send(noteText);
-	}
+        location.reload();
+    }
+
+    function updateNote(noteText, id) {
+        var xmlHttp = new XMLHttpRequest();
+        xmlHttp.open("POST", "http://localhost:8080/notes/update/" + id, false);
+        xmlHttp.setRequestHeader("Content-type", "text/plain");
+        xmlHttp.setRequestHeader("Access-Control-Allow-Origin", "*");
+        // xmlHttp.setRequestHeader("Content-type", "application/json");
+        xmlHttp.send(noteText);
+        return xmlHttp.status;
+    }
 
 </script>
 

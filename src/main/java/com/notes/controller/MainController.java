@@ -1,29 +1,25 @@
 package com.notes.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.mongodb.BasicDBObject;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
-import com.notes.constants.MongoConstants;
 import com.notes.entity.Note;
+import com.notes.entity.UserDetails;
 import com.notes.utils.MongoUtils;
 import lombok.SneakyThrows;
+import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.MongoDatabaseUtils;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Consumer;
 
 @RestController
 @RequestMapping(value = "/notes")
@@ -31,7 +27,6 @@ public class MainController {
 
     @Autowired
     MongoDatabase mongoDatabase;
-
 
     @SneakyThrows
     @RequestMapping(value = "/{user}")
@@ -64,5 +59,31 @@ public class MainController {
         System.out.println("id = " + id);
         System.out.println("textBody = " + textBody);
 
+        Note updateNote = new Note();
+        updateNote.setId(new ObjectId(id));
+        updateNote.setLast_updated(new Date());
+        updateNote.setText(textBody.split(",")[0].trim());
+        updateNote.setCreated(new Date(textBody.split(",")[1].trim()));
+        updateNote.setName("user2");
+        //todo : set user as well
+
+
+        MongoCollection collection =  mongoDatabase.getCollection("notes");
+        Bson filter = MongoUtils.updateFilterById(id);
+        Document document = MongoUtils.mapEntityToDB(updateNote);
+        collection.findOneAndReplace(filter, document);
+
     }
+
+    @RequestMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    public ResponseEntity signUp(@RequestBody UserDetails userDetails){
+        System.out.println("userDetails : " +  userDetails);
+
+        MongoCollection<UserDetails> userCollection =  mongoDatabase.getCollection("users", UserDetails.class);
+        String hashedPass = MongoUtils.createHash(userDetails.getPassword());
+        userDetails.setPassword(hashedPass);
+        userCollection.insertOne(userDetails);
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
 }
