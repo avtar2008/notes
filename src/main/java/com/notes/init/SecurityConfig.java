@@ -23,12 +23,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.authorizeRequests()
 
 //                .authorizeUrls()
-                .antMatchers("/login").permitAll()
-                .antMatchers("/users**","/sessions/**").hasRole("ADMIN")
-                .antMatchers("/resources/**","/signup.html", "/notes/**").permitAll()
-                .anyRequest().hasRole("USER")
-                .and()
-                .jee()
-                .mappableRoles("ROLE_USER","ROLE_ADMIN");
+                .antMatchers("/login", "/resources/**", "/signup.html", "/notes/**").permitAll();
+                //.antMatchers("/users**","/sessions/**").hasRole("ADMIN");
+//                .anyRequest().hasRole("USER")
+//                .and()
+//                .jee()
+//                .mappableRoles("ROLE_USER","ROLE_ADMIN");
     }
 }
