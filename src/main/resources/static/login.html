@@ -1,70 +1,21 @@
-<!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<title>Login Page</title>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.js"></script>
-	<link rel="stylesheet" type="text/css" href="login.css" />
-</head>
-
-<body data-ng-app="">
-<div id="outer_div">
-
-<!--	<div data-ng-include="'header.html'"></div>-->
-	<header id="top_header"> Welcome to Online Notes Portal </header>
-	<div class="content">
-<!--		<div data-ng-include="'LHN.html'"></div>-->
-			<div id="main_content">
-			<form enctype="application/json" class="form">
-				<input type="text" id="Username" value="UserName"></input>
-				<input type="text" id="Password" value="Password"></input>
-				<input type="button" onclick="sub()" id="Submit_btn" value="Login"></input>
-			</form>
-			</div>
-		</div>
-	
-	<div data-ng-include="'footer.html'"></div>
-</div>
-
-<script type="text/javascript">
-
-function sub(){
-	var obj = new Object();
-	var http = new XMLHttpRequest();
-	
-	obj.userName = document.getElementById("Username").value;
-	obj.passWord = document.getElementById("Password").value;
-	
-	var jsonString = JSON.stringify(obj);
-	
-	http.open("POST", "http://localhost:8080/Social/rest/login/a", false);
-	http.setRequestHeader("Content-type", "application/json");
-	http.send(jsonString);
-	document.write(http.responseText);
-	/*
-	document.getElementById("Username").value = http.responseText;
-	 http.onreadystatechange = function() {
-		  if (this.readyState == 4 && this.status == 200) {
-		    document.getElementById("UserName").value = this.responseText;
-		  }
-} */
-
-}
-</script>
-
-
+<head></head>
+<body>
+<h1>Login</h1>
+<form name='f' action="login" method='POST'>
+	<table>
+		<tr>
+			<td>User:</td>
+			<td><input type='text' name='username' value=''></td>
+		</tr>
+		<tr>
+			<td>Password:</td>
+			<td><input type='password' name='password' /></td>
+		</tr>
+		<tr>
+			<td><input name="submit" type="submit" value="submit" /></td>
+		</tr>
+	</table>
+</form>
 </body>
 </html>
-
-<style>
-	#top_header{
-		background: var(--back);
-		font: bold 30px Tahoma cursive;
-		/* background-color: green; */
-		text-align: center;
-		padding: 10px;
-
-	}
-
-</style>

@@ -76,4 +76,9 @@ public class MongoUtils {
             throw new RuntimeException(e);
         }
     }
+
+    public static String getApplicationRole(String userName, String password) {
+        System.out.println("sdasdwwd");
+        return "USER";
+    }
 }

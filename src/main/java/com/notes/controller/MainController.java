@@ -17,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.ModelAndView;
 
+import javax.xml.ws.Response;
 import java.util.Date;
 import java.util.List;
 
@@ -86,4 +88,12 @@ public class MainController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
+    @RequestMapping(value = "/do_login", method = RequestMethod.POST)
+    public ModelAndView performLogin(){
+        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        //System.out.println(userDetails);
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("home");
+        return modelAndView;
+    }
 }
