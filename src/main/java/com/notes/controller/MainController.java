@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
-import javax.xml.ws.Response;
 import java.util.Date;
 import java.util.List;
 
@@ -35,10 +34,10 @@ public class MainController {
     public ResponseEntity getNotesByUser(@PathVariable(value = "user") String userName) {
 
         Bson filter = MongoUtils.createUserFilter(userName);
-        MongoCollection collection =  mongoDatabase.getCollection("notes");
+        MongoCollection collection = mongoDatabase.getCollection("notes");
         FindIterable<Note> result = collection.find(filter, Note.class);
 
-        List<Note> notes = MongoUtils.mapIterableToList(result);
+        List<Note> notes = MongoUtils.mapNoteIterableToList(result);
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Origin", "*");
         System.out.println(new ObjectMapper().writeValueAsString(notes));
@@ -50,14 +49,14 @@ public class MainController {
     public ResponseEntity<String> saveNoteByUser(@PathVariable(value = "user") String userName, @RequestBody Note note) {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Origin", "*");
-        MongoCollection collection =  mongoDatabase.getCollection("notes");
+        MongoCollection collection = mongoDatabase.getCollection("notes");
         collection.insertOne(MongoUtils.mapEntityToDB(note));
 
         return new ResponseEntity<String>(note.toString(), headers, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/update/{id}", consumes = MediaType.TEXT_PLAIN_VALUE, method = RequestMethod.POST)
-    public void updateNoteById(@PathVariable("id") String id, @RequestBody String textBody){
+    public void updateNoteById(@PathVariable("id") String id, @RequestBody String textBody) {
         System.out.println("id = " + id);
         System.out.println("textBody = " + textBody);
 
@@ -70,7 +69,7 @@ public class MainController {
         //todo : set user as well
 
 
-        MongoCollection collection =  mongoDatabase.getCollection("notes");
+        MongoCollection collection = mongoDatabase.getCollection("notes");
         Bson filter = MongoUtils.updateFilterById(id);
         Document document = MongoUtils.mapEntityToDB(updateNote);
         collection.findOneAndReplace(filter, document);
@@ -78,10 +77,10 @@ public class MainController {
     }
 
     @RequestMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
-    public ResponseEntity signUp(@RequestBody UserDetails userDetails){
-        System.out.println("userDetails : " +  userDetails);
+    public ResponseEntity signUp(@RequestBody UserDetails userDetails) {
+        System.out.println("userDetails : " + userDetails);
 
-        MongoCollection<UserDetails> userCollection =  mongoDatabase.getCollection("users", UserDetails.class);
+        MongoCollection<UserDetails> userCollection = mongoDatabase.getCollection("users", UserDetails.class);
         String hashedPass = MongoUtils.createHash(userDetails.getPassword());
         userDetails.setPassword(hashedPass);
         userCollection.insertOne(userDetails);
@@ -89,11 +88,26 @@ public class MainController {
     }
 
     @RequestMapping(value = "/do_login", method = RequestMethod.POST)
-    public ModelAndView performLogin(){
+    public ModelAndView performLogin() {
         System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         //System.out.println(userDetails);
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("home");
         return modelAndView;
+    }
+
+    @RequestMapping(value = "/auth", method = RequestMethod.POST)
+    public ResponseEntity isValidCred(@RequestBody UserDetails user) {
+        MongoCollection userCollection = mongoDatabase.getCollection("users", UserDetails.class);
+        System.out.println("user :" + user);
+        Bson filter = MongoUtils.createUserFilter(user.getUsername(), MongoUtils.createHash(user.getPassword()));
+        List<UserDetails> result = MongoUtils.mapUserIterableToList(userCollection.find(filter, UserDetails.class));
+        String isValid = null;
+        if(result.isEmpty()){
+            isValid = "no";
+            return new ResponseEntity<>(isValid, HttpStatus.OK);
+        }
+        isValid = "yes";
+        return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
 }
