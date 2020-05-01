@@ -1,0 +1,64 @@
+@CHARSET "ISO-8859-1";
+
+*{
+	margin : 0px;
+	padding: 0px;
+	
+}
+body, section, div, input{
+	display:block;
+	border-radius:15px;
+}
+
+input{
+	margin:5px;
+}
+
+body{
+	margin: 10px;
+	width:99%;
+	display: flex;
+}
+#outer_div{
+	width: 100%;
+	margin: 20px 0px;
+	display: flex;
+	flex-direction: column;
+	
+}
+.content{
+	width:100%;
+	display: flex;
+	/* background: linear-gradient(to bottom right,#CF307A, #778583); */
+	flex-direction: row;
+	align-items: stretch;
+	align-content: stretch;
+	justify-content: space-around;
+	height: 400px;
+}
+
+#main_content{
+	margin: 5px;
+	padding: 10px;
+ 	flex-grow:1;
+ 	/* display:flex;
+ 	flex-direction: column; */
+	background: var(--back);
+	height:92%;
+}
+
+.form{
+	display: flex;
+	flex-direction: column;
+	align-items:center;
+	border-radius:25px;
+}
+
+.form > input{
+	height: 1.5rem;
+	width: 200px;
+	border-radius:25px;
+	padding-left:10px;
+	/* text-shadow: -1px -1px 2px black; */ 
+	
+}

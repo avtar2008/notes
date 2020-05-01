@@ -1,0 +1,58 @@
+<aside id="lhn">
+    <ul id="lhn_list">
+        <li id="lhn_item1"> &nbsp;&nbsp;&nbsp;&nbsp;Create</li>
+        <li id="lhn_item2"> &nbsp;&nbsp;&nbsp;&nbsp;Logout</li>
+    </ul>
+</aside>
+
+<script>
+    $(document).ready(function () {
+        $('#lhn_item1').on('click', function () {
+            window.location.href = "create.html";
+        });
+
+        $("#lhn_list li").mouseenter(function () {
+            $("#" + this.id).css({'box-shadow': '5px 5px 2px #888888 inset'});
+        });
+
+        $("#lhn_list li").mouseleave(function () {
+            $("#" + this.id).css({'box-shadow': '5px 5px 2px #888888'});
+        });
+    });
+
+
+</script>
+
+<style>
+
+    aside {
+        display: block;
+        border-radius: 15px;
+    }
+
+    #lhn {
+        margin: 5px;
+        padding: 10px;
+        width: 300px;
+        background: var(--back);
+        height: 92%;
+    }
+
+    ul {
+        list-style: none;
+    }
+
+    #lhn_list {
+        font: 25px bold cursive;
+        /* margin-left: 10px; */
+
+    }
+
+    #lhn_list > li {
+        margin-top: 15px;
+        padding-top: 15px;
+        padding-bottom: 5px;
+        box-shadow: 5px 5px 2px #888888;
+        border-radius: 15px;
+    }
+</style>

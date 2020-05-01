@@ -2,7 +2,6 @@ package com.notes.init;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
@@ -11,15 +10,15 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-@Configuration
-@EnableWebSecurity
+//@Configuration
+//@EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     public void configure(WebSecurity web) throws Exception {
         web
                 .ignoring()
-                .antMatchers( "/notes/**");
+                .antMatchers( "/notes/**", "/error", "/unsecure/**");
     }
 
 //    @Override
@@ -39,15 +38,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
-                .authorizeRequests().antMatchers("/error.html").permitAll()
+                .authorizeRequests().antMatchers("/error.html", "/login").permitAll()
                 .and()
-                .authorizeRequests().antMatchers("/static/**").authenticated()
+                .authorizeRequests().antMatchers("/**").authenticated()
                 .and()
                 .formLogin()
 //                .loginPage("/login.html")
                 .successForwardUrl("/home.html")
-                .loginProcessingUrl("/notes/do_login")
-                .failureForwardUrl("/error.html")
+//                .loginProcessingUrl("/notes/do_login")
+                .failureForwardUrl("/unsecure/error.html")
                 .defaultSuccessUrl("/create.html")
                 .permitAll().and().authenticationProvider(new CustomAuthenticationProvider());
     }
@@ -55,7 +54,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(final AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-                .withUser("user").password(passwordEncoder().encode("user")).roles("USER")
+                .withUser("user").password("user").roles("USER")
                 .and()
                 .withUser("a").password(passwordEncoder().encode("a")).roles("USER")
                 .and()

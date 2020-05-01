@@ -11,6 +11,7 @@ import java.util.Objects;
 public class UserDetails {
     private String username;
     private String password;
+    private String role;
 
 
     @Override

@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
+import com.notes.constants.MongoConstants;
 import com.notes.entity.Note;
 import com.notes.entity.UserDetails;
 import com.notes.utils.MongoUtils;
@@ -23,14 +24,14 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "/notes")
+//@RequestMapping(value = "/notes")
 public class MainController {
 
     @Autowired
     MongoDatabase mongoDatabase;
 
     @SneakyThrows
-    @RequestMapping(value = "/{user}")
+    @RequestMapping(value = "/notes/{user}")
     public ResponseEntity getNotesByUser(@PathVariable(value = "user") String userName) {
 
         Bson filter = MongoUtils.createUserFilter(userName);
@@ -45,17 +46,21 @@ public class MainController {
     }
 
     @SneakyThrows
-    @RequestMapping(value = "/save/{user}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @RequestMapping(value = "/notes/save/{user}", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity<String> saveNoteByUser(@PathVariable(value = "user") String userName, @RequestBody Note note) {
+        System.out.println("saving note : " + note);
+        note.setName(userName);
+        note.setCreated(new Date());
+        note.setLast_updated(new Date());
         HttpHeaders headers = new HttpHeaders();
         headers.add("Access-Control-Allow-Origin", "*");
-        MongoCollection collection = mongoDatabase.getCollection("notes");
-        collection.insertOne(MongoUtils.mapEntityToDB(note));
+        MongoCollection collection = mongoDatabase.getCollection("notes", Note.class);
+        collection.insertOne(note);
 
         return new ResponseEntity<String>(note.toString(), headers, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/update/{id}", consumes = MediaType.TEXT_PLAIN_VALUE, method = RequestMethod.POST)
+    @RequestMapping(value = "/notes/update/{id}", consumes = MediaType.TEXT_PLAIN_VALUE, method = RequestMethod.POST)
     public void updateNoteById(@PathVariable("id") String id, @RequestBody String textBody) {
         System.out.println("id = " + id);
         System.out.println("textBody = " + textBody);
@@ -65,7 +70,7 @@ public class MainController {
         updateNote.setLast_updated(new Date());
         updateNote.setText(textBody.split(",")[0].trim());
         updateNote.setCreated(new Date(textBody.split(",")[1].trim()));
-        updateNote.setName("user2");
+        updateNote.setName("user1");
         //todo : set user as well
 
 
@@ -76,27 +81,19 @@ public class MainController {
 
     }
 
-    @RequestMapping(value = "/signup", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
+    @RequestMapping(value = "/notes/signup", consumes = MediaType.APPLICATION_JSON_VALUE, method = RequestMethod.POST)
     public ResponseEntity signUp(@RequestBody UserDetails userDetails) {
         System.out.println("userDetails : " + userDetails);
 
         MongoCollection<UserDetails> userCollection = mongoDatabase.getCollection("users", UserDetails.class);
         String hashedPass = MongoUtils.createHash(userDetails.getPassword());
         userDetails.setPassword(hashedPass);
+        userDetails.setRole(MongoConstants.ROLE_USER);
         userCollection.insertOne(userDetails);
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/do_login", method = RequestMethod.POST)
-    public ModelAndView performLogin() {
-        System.out.println("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        //System.out.println(userDetails);
-        ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("home");
-        return modelAndView;
-    }
-
-    @RequestMapping(value = "/auth", method = RequestMethod.POST)
+    @RequestMapping(value = "/notes/auth", method = RequestMethod.POST)
     public ResponseEntity isValidCred(@RequestBody UserDetails user) {
         MongoCollection userCollection = mongoDatabase.getCollection("users", UserDetails.class);
         System.out.println("user :" + user);
@@ -110,4 +107,9 @@ public class MainController {
         isValid = "yes";
         return new ResponseEntity<>(isValid, HttpStatus.OK);
     }
+
+//    @RequestMapping(value = "/error", method = RequestMethod.POST)
+//    public String isValidCred() {
+//        return "we reached error [age";
+//    }
 }
